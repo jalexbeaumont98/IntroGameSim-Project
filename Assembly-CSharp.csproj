@@ -65,8 +65,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Projectiles\Projectile.cs" />
-    <Compile Include="Assets\ScriptableObjects\ProjectileData.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Projectiles\EnemyProjectile.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Enemy.cs" />
+    <Compile Include="Assets\ScriptableObjects\Projectiles\ProjectileData.cs" />
+    <Compile Include="Assets\Scripts\Enemies\EnemyWraith.cs" />
+    <Compile Include="Assets\Scripts\Player\PlayerShootController.cs" />
+    <Compile Include="Assets\Scripts\GameManagers\GameState.cs" />
     <Compile Include="Assets\Scripts\Projectiles\PlayerProjectile.cs" />
   </ItemGroup>
   <ItemGroup>

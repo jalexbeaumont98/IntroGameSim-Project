@@ -13,13 +13,6 @@ public class Projectile : MonoBehaviour
     [SerializeField] protected Rigidbody2D rb;
 
 
-    bool projectileSet;
-
-    protected virtual void Start()
-    {
-
-    }
-    
     public virtual void Initialize(ProjectileData data)
     {
         speed = data.speed;
@@ -34,15 +27,26 @@ public class Projectile : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
 
-        
+        Destroy(gameObject, 12);
+
     }
+    
+    public virtual void Launch()
+    {
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+        rb.velocity = transform.right * speed;
+    }
+
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.layer == groundLayer)
+        print("collided with trigger: " + collision.gameObject.tag);
+        
+        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
         {
             DestroyProjectile();
         }
+
     }
     
     public virtual void DestroyProjectile()
