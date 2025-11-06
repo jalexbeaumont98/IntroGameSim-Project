@@ -2,20 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerProjectile : Projectile
+public class EnemyProjectile : Projectile
 {
-
     protected override void OnTriggerEnter2D(Collider2D collision)
     {
 
 
-        if (collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "Player")
         {
-            Enemy enemy = collision.GetComponent<Enemy>();
+            PlayerController player = collision.GetComponent<PlayerController>();
 
-            if (enemy)
+            if (player)
             {
-                enemy.TakeDamage(damage);
+                player.TakeDamage(damage);
             }
 
             DestroyProjectile();
@@ -23,6 +22,4 @@ public class PlayerProjectile : Projectile
         
         base.OnTriggerEnter2D(collision);
     }
-
-    
 }
