@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -39,10 +40,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float fallSpeedMultiplier = 2f;
     [SerializeField] private float maxFallSpeed = 18f;
 
+    [Header("Firing Settings")]
+    public float fireRate = 2f;  // shots per second — higher = faster
+    private float nextFireTime = 0f;
+
     [Header("Other References")]
     [SerializeField] private Transform respawnPoint;
     [SerializeField] private CinemachineVirtualCameraBase ogCam;
     [SerializeField] private CinemachineVirtualCameraBase deathCam;
+
+    [SerializeField] private PlayerShootController shootCon;
 
     //private refs
     private Rigidbody2D rb;
@@ -50,6 +57,8 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer sr;
 
     public static event System.Action<int> OnPlayerHPChange;
+
+
 
 
 
@@ -130,6 +139,19 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+
+    public void Fire(InputAction.CallbackContext context)
+    {
+        if (context.performed && Time.time >= nextFireTime)
+        {
+            shootCon.FireProjectile();
+            print("shooted!");
+
+            // Set next allowed time to fire
+            nextFireTime = Time.time + (1f / fireRate);
+        }
+    }
+
     /* todo platform logic
 
     public void DropPlatform(InputAction.CallbackContext context)
@@ -188,9 +210,17 @@ public class PlayerController : MonoBehaviour
 
         // If the mouse is to the right of the player, face right (not flipped)
         if (mouseWorldPos.x > transform.position.x)
+        {
             GetComponent<SpriteRenderer>().flipX = false;
+            shootCon.SetFlipped(false);
+        }
+
         else
+        {
             GetComponent<SpriteRenderer>().flipX = true;
+            shootCon.SetFlipped(true);
+        }
+        
     }
 
 
@@ -246,13 +276,13 @@ public class PlayerController : MonoBehaviour
     public void TakeDamage(int damage)
     {
         hp -= damage;
-        print("damage: "+  damage + " hp: " + hp);
+        print("damage: " + damage + " hp: " + hp);
 
         OnPlayerHPChange?.Invoke(hp);
         if (hp <= 0)
             Die();
     }
-    
+
     private void Die()
     {
         transform.position = respawnPoint.position;
@@ -263,6 +293,7 @@ public class PlayerController : MonoBehaviour
 
         print("player ded :(");
         //MenuMan.Instance.SetDeathMenu();
+        SceneManager.LoadScene("GameOver");
     }
 
 

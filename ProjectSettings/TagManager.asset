@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Enemy
+  - Crystal
   layers:
   - Default
   - TransparentFX
@@ -13,7 +15,7 @@ TagManager:
   - UI
   - Ground
   - Player
-  - 
+  - Enemy
   - 
   - 
   - 
@@ -40,4 +42,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 3833366059
+    locked: 0
+  - name: Player
+    uniqueID: 128943599
+    locked: 0
+  - name: Foreground
+    uniqueID: 2287817565
+    locked: 0
+  - name: Effects
+    uniqueID: 1492103315
     locked: 0
