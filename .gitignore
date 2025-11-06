@@ -1,3 +1,5 @@
 /Library
 /UserSettings
 /Logs
+*.csproj
+*.csproj
