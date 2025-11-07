@@ -7,7 +7,7 @@ public class TurretPlacer : MonoBehaviour
 {
     [Header("Scene References")]
     [SerializeField] private Camera cam;                  // If null, defaults to Camera.main
-    [SerializeField] private Grid grid;                   // Your Grid (usually parent of tilemaps)
+    [SerializeField] private Grid grid;                   
     [SerializeField] private Tilemap groundTilemap;       // Terrain tilemap
     [SerializeField] private Tilemap turretTilemap;       // Turret tilemap
 

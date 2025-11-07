@@ -14,6 +14,7 @@ public class GameOverMenu : MonoBehaviour
         else
         {
             Debug.LogWarning("No last level recorded!");
+            SceneManager.LoadScene("Title_Screen");
         }
     }
 
