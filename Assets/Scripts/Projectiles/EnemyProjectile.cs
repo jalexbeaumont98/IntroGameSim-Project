@@ -19,6 +19,18 @@ public class EnemyProjectile : Projectile
 
             DestroyProjectile();
         }
+
+        else if (collision.gameObject.tag == "Crystal")
+        {
+            CrystalController cyrstal = collision.GetComponent<CrystalController>();
+
+            if (cyrstal)
+            {
+                cyrstal.TakeDamage(damage);
+            }
+
+            DestroyProjectile();
+        }
         
         base.OnTriggerEnter2D(collision);
     }

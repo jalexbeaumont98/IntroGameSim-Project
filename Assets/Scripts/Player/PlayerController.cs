@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -56,7 +57,7 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
     private SpriteRenderer sr;
 
-    public static event System.Action<int> OnPlayerHPChange;
+    public static event System.Action<int, int> OnPlayerHPChange;
 
 
 
@@ -68,12 +69,15 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
 
+        SetHP(10);
+
     }
 
     public void SetHP(int hpIn)
     {
         hp = hpIn;
-        OnPlayerHPChange?.Invoke(hp);
+        maxHp = hpIn;
+        OnPlayerHPChange?.Invoke(hp, maxHp);
     }
 
     void Update()
@@ -149,6 +153,23 @@ public class PlayerController : MonoBehaviour
 
             // Set next allowed time to fire
             nextFireTime = Time.time + (1f / fireRate);
+        }
+    }
+
+    public void StartWave(InputAction.CallbackContext context)
+    {
+        
+
+        if (context.performed)
+        {
+            if (GameManager.State != GameManager.GameState.Preparation) return;
+
+            float distanceToCrystal = Vector2.Distance(transform.position, GameObject.FindGameObjectWithTag("Crystal").transform.position);
+            
+            if (distanceToCrystal < 3)
+            {
+                GameManager.Instance.SetState(GameManager.GameState.WaveInProgress);
+            }
         }
     }
 
@@ -278,7 +299,7 @@ public class PlayerController : MonoBehaviour
         hp -= damage;
         print("damage: " + damage + " hp: " + hp);
 
-        OnPlayerHPChange?.Invoke(hp);
+        OnPlayerHPChange?.Invoke(hp, maxHp);
         if (hp <= 0)
             Die();
     }
@@ -287,13 +308,13 @@ public class PlayerController : MonoBehaviour
     {
         transform.position = respawnPoint.position;
         hp = maxHp;
-        OnPlayerHPChange?.Invoke(hp);
+        OnPlayerHPChange?.Invoke(hp, maxHp);
         //CameraController.GetMainCineCam().Priority = 0;
-        deathCam.Priority = 25;
+        //deathCam.Priority = 25;
 
         print("player ded :(");
         //MenuMan.Instance.SetDeathMenu();
-        SceneManager.LoadScene("GameOver");
+        SceneManager.LoadScene("Game_Over");
     }
 
 
