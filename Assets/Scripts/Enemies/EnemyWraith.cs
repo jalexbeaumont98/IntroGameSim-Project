@@ -5,7 +5,6 @@ using UnityEngine;
 public class EnemyWraith : Enemy
 {
     [Header("References")]
-    [SerializeField] SpriteRenderer sr;
     [SerializeField] ProjectileData projData;
     [SerializeField] Transform firePoint;
     [SerializeField] private LayerMask groundLayer;
@@ -15,14 +14,12 @@ public class EnemyWraith : Enemy
     [SerializeField] private float speed = 1f;
     [SerializeField] private float arrivalThreshold = 0.1f;
 
-    [Header("Waypoints")]
-    [SerializeField] private Transform currentWaypoint;  // optional start; if null, GameState will give first
-    [SerializeField] private int pathIndex = -2;
-    [SerializeField] private int path = 0;
+    
+    
     [SerializeField] private bool stopMoving = false;                     // set true when final waypoint reached
 
     [Header("Player Detection")]
-    [SerializeField] private Transform player;
+
     [SerializeField] private float detectRadius = 2f;
     private bool pausedByPlayer = false;
 
@@ -30,26 +27,9 @@ public class EnemyWraith : Enemy
     {
         base.Start();
 
-        // Ensure we have a starting waypoint from GameState
-        if (GameState.Instance == null)
-        {
-            Debug.LogError("GhostPathFollower: No GameState in scene.");
-            enabled = false;
-            return;
-        }
-
-        print("asking for waypoint");
-
-        if (currentWaypoint == null)
-        {
-            currentWaypoint = GameState.Instance.GetNextWaypoint(-2, path);
-            pathIndex++;
-        }
-
-        crystal = GameObject.FindGameObjectWithTag("Crystal").transform;
-
-        sr = GetComponent<SpriteRenderer>();
     }
+
+    
 
     private void Update()
     {
@@ -92,7 +72,7 @@ public class EnemyWraith : Enemy
         if (Vector2.Distance(transform.position, wp) <= arrivalThreshold)
         {
             print("arrived at current waypoint");
-            Transform next = GameState.Instance.GetNextWaypoint(pathIndex);
+            Transform next = GameManager.Instance.GetNextWaypoint(pathIndex);
             pathIndex++;
 
             // If same waypoint returned → final destination reached
