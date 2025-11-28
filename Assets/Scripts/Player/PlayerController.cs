@@ -148,11 +148,14 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed && Time.time >= nextFireTime)
         {
+            if (TurretPlacer.Instance.buildMode) return;
+
             shootCon.FireProjectile();
             print("shooted!");
 
             // Set next allowed time to fire
             nextFireTime = Time.time + (1f / fireRate);
+            AudioController.Instance.PlaySound_PlayerShoot();
         }
     }
 
@@ -314,7 +317,7 @@ public class PlayerController : MonoBehaviour
 
         print("player ded :(");
         //MenuMan.Instance.SetDeathMenu();
-        SceneManager.LoadScene("Game_Over");
+        ScreenFader.Instance.FadeOutAndLoadScene("Game_Over");
     }
 
 

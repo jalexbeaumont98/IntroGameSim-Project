@@ -16,4 +16,4 @@ MonoBehaviour:
   damage: 1
   sprite: {fileID: 21300000, guid: 53611dc25792ca248a3b62a78f9b93cb, type: 3}
   prefab: {fileID: 4722092468710396709, guid: e32a6a4fbaa754b4e9ef85059ed9f3cf, type: 3}
-  hitEffect: {fileID: 0}
+  hitEffect: {fileID: 6496230095560324792, guid: e542605cf3f9947498a1d16c2de2ca5d, type: 3}

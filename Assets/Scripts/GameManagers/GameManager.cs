@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private WaveManager waveManager;
 
     [SerializeField] private int numEnemies = 0;
+    [SerializeField] private int startingMoney;
 
 
     void Awake()
@@ -60,7 +61,11 @@ public class GameManager : MonoBehaviour
     {
         SetState(GameState.Preparation);
 
-        SetMoney(100);
+        SetMoney(startingMoney);
+
+        if (SceneManager.GetActiveScene().name == "Player_Building_Scene") AudioController.Instance.PlayMusic_Gameplay();
+        if (SceneManager.GetActiveScene().name == "Game_Over") AudioController.Instance.PlayMusic_GameOver();
+        if (SceneManager.GetActiveScene().name == "Level_Clear") AudioController.Instance.PlayMusic_Victory();
     }
 
     public void SetState(GameState newState)
@@ -92,8 +97,11 @@ public class GameManager : MonoBehaviour
 
             case GameState.Victory:
                 bottomText.text = "You win!!!";
+                ScreenFader.Instance.FadeOutAndLoadScene("Level_Clear");
                 break;
         }
+
+        print("State Changed: " + newState);
     }
 
     void OnEnable()
@@ -180,7 +188,7 @@ public class GameManager : MonoBehaviour
     {
         numEnemies++;
     }
-    
+
     public void SubtractEnemy()
     {
         numEnemies--;

@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -7,44 +10,118 @@ public class TurretPlacer : MonoBehaviour
 {
     [Header("Scene References")]
     [SerializeField] private Camera cam;                  // If null, defaults to Camera.main
-    [SerializeField] private Grid grid;                   
+    [SerializeField] private Grid grid;
     [SerializeField] private Tilemap groundTilemap;       // Terrain tilemap
     [SerializeField] private Tilemap turretTilemap;       // Turret tilemap
+    [SerializeField] private Tilemap previewTilemap;
+    [SerializeField] private TextMeshProUGUI controlsText;
 
     [Header("Turret Assets")]
     [SerializeField] private TileBase turretBaseTile;     // Lower turret tile (on top of ground)
     [SerializeField] private TileBase turretTopTile;      // Upper turret tile
     [SerializeField] private GameObject turretPrefab;     // Actual turret GameObject
+    [SerializeField] private TileBase previewBaseTile;     // Lower turret tile (on top of ground)
+    [SerializeField] private TileBase previewTopTile;      // Upper turret tile
+    [SerializeField] private GameObject previewPrefab;     // Actual turret GameObject
+    [SerializeField] private Color correctPlacementColor;
+    [SerializeField] private Color incorrectPlacementColor;
+    [SerializeField] private int turretCost = 50;
+
 
     [Header("Input")]
-    [SerializeField] private KeyCode placeKey = KeyCode.Mouse1; // Left click by default
+    [SerializeField] private KeyCode placeKey = KeyCode.Mouse1;
+    [SerializeField] private KeyCode changeModeKey = KeyCode.LeftShift;
 
-    private void Awake()
+    public bool buildMode = false;
+    private bool hasPreview = false;
+
+    Vector3Int previousUpperCell;
+    Vector3Int previousLowerCell;
+    GameObject previousPreviewPrefab;
+
+    public static TurretPlacer Instance { get; private set; }
+
+
+    void Awake()
     {
+        // Singleton pattern (ensures one persistent GameState)
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
         if (!cam) cam = Camera.main;
     }
 
+
     private void Update()
     {
-        if (Input.GetKeyDown(placeKey))
+
+        if (Input.GetKeyDown(changeModeKey))
         {
-            Vector3 world = cam.ScreenToWorldPoint(Input.mousePosition);
-            TryPlaceTurretAtWorld(world);
+            buildMode = !buildMode;
+
+            if (!buildMode)
+            {
+                DestroyPreviousPreview();
+                if (controlsText)
+                    controlsText.text = "Press Left Shift to build turrets!";
+            }
+
+            else
+            {
+                if (controlsText)
+                    controlsText.text = "Left Click to place a Turret!";
+            }
+        }
+
+        if (buildMode)
+        {
+
+            UnityEngine.Vector3 world = cam.ScreenToWorldPoint(Input.mousePosition);
+            world.z = 0f;
+            Vector3Int cellPosition = GetCellPosition(world);
+
+            if (Input.GetKeyDown(placeKey))
+            {
+
+                if (GameManager.Instance.GetMoney() >= turretCost)
+                    TryPlaceTurretAtWorld(cellPosition, true);
+            }
+
+            else if (previousLowerCell != cellPosition) //preview tiles
+            {
+                TryPlaceTurretAtWorld(cellPosition);
+            }
+
+
         }
     }
 
-    public bool TryPlaceTurretAtWorld(Vector3 worldPosition)
+    public Vector3Int GetCellPosition(UnityEngine.Vector3 worldPosition)
     {
-        if (GameManager.Instance.GetMoney() < 50) return false;
+        return grid.WorldToCell(worldPosition);
+    }
+
+    
+
+    public void TryPlaceTurretAtWorld(Vector3Int clickedCell, bool build = false)
+    {
+
+        DestroyPreviousPreview();
+
 
         if (grid == null || groundTilemap == null || turretTilemap == null || turretPrefab == null || turretBaseTile == null || turretTopTile == null)
         {
             Debug.LogWarning("[TurretPlacer] Missing references.");
-            return false;
+            return;
         }
 
         // Convert to grid column we clicked in
-        Vector3Int clickedCell = grid.WorldToCell(worldPosition);
+
 
         // Find supporting ground: either directly below the LOWER turret cell or one cell further.
         // We’ll compute placement relative to the *column* clicked, not the exact row.
@@ -55,6 +132,8 @@ public class TurretPlacer : MonoBehaviour
         // Case A: ground at clickedCell - 1 => lower = clickedCell
         // Case B: ground at clickedCell - 2 => lower = clickedCell - 1
         // Else: invalid (no support)
+
+        bool correctPlacement = true;
 
         Vector3Int supportBelow = clickedCell + Vector3Int.down;
         Vector3Int supportTwoBelow = clickedCell + Vector3Int.down * 2;
@@ -74,7 +153,8 @@ public class TurretPlacer : MonoBehaviour
         else
         {
             Debug.Log("Invalid: no supporting ground at y-1 or y-2.");
-            return false;
+            lowerCell = clickedCell;
+            correctPlacement = false;
         }
 
         Vector3Int upperCell = lowerCell + Vector3Int.up;
@@ -83,25 +163,91 @@ public class TurretPlacer : MonoBehaviour
         if (turretTilemap.HasTile(lowerCell) || turretTilemap.HasTile(upperCell))
         {
             Debug.Log("Invalid: turret already occupies this column (lower or upper).");
-            return false;
+            correctPlacement = false;
         }
 
         // Rule: placement cells must NOT have ground tiles right now
         if (groundTilemap.HasTile(lowerCell) || groundTilemap.HasTile(upperCell))
         {
             Debug.Log("Invalid: ground tiles present where turret should go.");
-            return false;
+            correctPlacement = false;
         }
+
+        if (correctPlacement && build)
+        {
+            PlaceTurretTrue(lowerCell, upperCell);
+            hasPreview = false;
+        } 
+
+        else if (!build)
+        {
+            SpawnPreviewTurret(lowerCell, upperCell, correctPlacement);
+            hasPreview = true;
+        } 
+
+    }
+
+
+
+    private void PlaceTurretTrue(Vector3Int lowerCell, Vector3Int upperCell)
+    {
 
         // All checks passed—place tiles and prefab.
         turretTilemap.SetTile(lowerCell, turretBaseTile);
         turretTilemap.SetTile(upperCell, turretTopTile);
 
         // Spawn the turret GameObject at the UPPER cell (you asked to match the "turret tile spawned just above")
-        Vector3 upperWorld = grid.GetCellCenterWorld(upperCell);
-        Instantiate(turretPrefab, upperWorld, Quaternion.identity);
+        UnityEngine.Vector3 upperWorld = grid.GetCellCenterWorld(upperCell);
+        Instantiate(turretPrefab, upperWorld, UnityEngine.Quaternion.identity);
 
-        GameManager.Instance.SetMoney(-50);
-        return true;
+        GameManager.Instance.SetMoney(-turretCost);
+
+        AudioController.Instance.PlaySound_ButtonClick();
+
     }
+
+    private void SpawnPreviewTurret(Vector3Int lowerCell, Vector3Int upperCell, bool correctPlacement)
+    {
+
+        previousLowerCell = lowerCell;
+        previousUpperCell = upperCell;
+
+        previewTilemap.SetTile(lowerCell, previewBaseTile);
+        previewTilemap.SetTile(upperCell, previewTopTile);
+
+
+        // Spawn the turret GameObject at the UPPER cell (you asked to match the "turret tile spawned just above")
+        UnityEngine.Vector3 upperWorld = grid.GetCellCenterWorld(upperCell);
+        previousPreviewPrefab = Instantiate(previewPrefab, upperWorld, UnityEngine.Quaternion.identity);
+
+        previewTilemap.SetTileFlags(lowerCell, TileFlags.None);
+        previewTilemap.SetTileFlags(upperCell, TileFlags.None);
+
+        if (correctPlacement)
+        {
+            previewTilemap.SetColor(lowerCell, correctPlacementColor);
+            previewTilemap.SetColor(upperCell, correctPlacementColor);
+            previewPrefab.GetComponent<SpriteRenderer>().color = correctPlacementColor;
+        }
+
+        else
+        {
+            previewTilemap.SetColor(lowerCell, incorrectPlacementColor);
+            previewTilemap.SetColor(upperCell, incorrectPlacementColor);
+            previousPreviewPrefab.GetComponent<SpriteRenderer>().color = incorrectPlacementColor;
+        }
+
+
+    }
+
+    private void DestroyPreviousPreview()
+    {
+        if (hasPreview)
+        {
+            if (previousPreviewPrefab) Destroy(previousPreviewPrefab);
+            previewTilemap.SetTile(previousLowerCell, null);
+            previewTilemap.SetTile(previousUpperCell, null);
+        }
+    }
+
 }
