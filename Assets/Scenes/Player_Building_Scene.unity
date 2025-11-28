@@ -746,6 +746,69 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1513338280}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &370660508
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 370660510}
+  - component: {fileID: 370660509}
+  m_Layer: 0
+  m_Name: WaveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &370660509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 370660508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aecdec2a26dad9d4dbe8323ce16cc8f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waves:
+  - enemytype: {fileID: 3280224236720264862, guid: 711ad8530c6774d4c93a5b273dabcb9f, type: 3}
+    amount: 5
+    side: 0
+    delay: 3
+  - enemytype: {fileID: 3280224236720264862, guid: 711ad8530c6774d4c93a5b273dabcb9f, type: 3}
+    amount: 3
+    side: 1
+    delay: 10
+  - enemytype: {fileID: 3280224236720264862, guid: 711ad8530c6774d4c93a5b273dabcb9f, type: 3}
+    amount: 5
+    side: 1
+    delay: 3
+  - enemytype: {fileID: 3280224236720264862, guid: 711ad8530c6774d4c93a5b273dabcb9f, type: 3}
+    amount: 5
+    side: 0
+    delay: 10
+  leftSpawnPoint: {fileID: 797557112}
+  rightSpawnPoint: {fileID: 566247847}
+--- !u!4 &370660510
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 370660508}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.8608668, y: 7.7097616, z: -10.056238}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &377828171
 GameObject:
   m_ObjectHideFlags: 0
@@ -13306,7 +13369,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2005881165}
   - component: {fileID: 2005881164}
-  - component: {fileID: 2005881166}
   - component: {fileID: 2005881167}
   m_Layer: 0
   m_Name: GameState
@@ -13332,7 +13394,7 @@ MonoBehaviour:
   waypointB: {fileID: 1461532255}
   wraithWaypoints: []
   bottomText: {fileID: 133790421}
-  waveManager: {fileID: 2005881166}
+  waveManager: {fileID: 370660509}
   numEnemies: 0
 --- !u!4 &2005881165
 Transform:
@@ -13349,37 +13411,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2005881166
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2005881163}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aecdec2a26dad9d4dbe8323ce16cc8f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  waves:
-  - enemytype: {fileID: 3280224236720264862, guid: 711ad8530c6774d4c93a5b273dabcb9f, type: 3}
-    amount: 5
-    side: 0
-    delay: 3
-  - enemytype: {fileID: 3280224236720264862, guid: 711ad8530c6774d4c93a5b273dabcb9f, type: 3}
-    amount: 3
-    side: 1
-    delay: 10
-  - enemytype: {fileID: 3280224236720264862, guid: 711ad8530c6774d4c93a5b273dabcb9f, type: 3}
-    amount: 5
-    side: 1
-    delay: 3
-  - enemytype: {fileID: 3280224236720264862, guid: 711ad8530c6774d4c93a5b273dabcb9f, type: 3}
-    amount: 5
-    side: 0
-    delay: 10
-  leftSpawnPoint: {fileID: 797557112}
-  rightSpawnPoint: {fileID: 566247847}
 --- !u!114 &2005881167
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13661,6 +13692,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 2005881165}
+  - {fileID: 370660510}
   - {fileID: 1502374828}
   - {fileID: 434064052}
   - {fileID: 1498123814}

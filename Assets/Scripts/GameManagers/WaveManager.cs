@@ -11,7 +11,7 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
-       
+
     }
 
     public void StartWaves()
@@ -25,7 +25,7 @@ public class WaveManager : MonoBehaviour
         foreach (Wave wave in waves)
         {
             Debug.Log($"Starting wave with {wave.amount} enemies...");
-            
+
             // Spawn each enemy in this wave with small time gaps
             for (int i = 0; i < wave.amount; i++)
             {
@@ -52,6 +52,11 @@ public class WaveManager : MonoBehaviour
 
         Debug.Log("All waves complete!");
         GameManager.Instance.SetState(GameManager.GameState.AllEnemiesSpawned);
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
     }
 
 
