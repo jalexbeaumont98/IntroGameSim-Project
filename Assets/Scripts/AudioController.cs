@@ -14,7 +14,7 @@ public class AudioController : MonoBehaviour
 
     [Header("Sound Effects")]
     public AudioClip playerShoot;
-    public AudioClip enemyDeath;
+    public AudioClip enemyShoot;
     public AudioClip buttonClick;
 
     private AudioSource musicSource;
@@ -46,6 +46,7 @@ public class AudioController : MonoBehaviour
         musicSource.Play();
     }
 
+
     public void PlayMusic_Title() => PlayMusic(titleMusic);
     public void PlayMusic_Gameplay() => PlayMusic(gameplayMusic);
     public void PlayMusic_Victory() => PlayMusic(victoryMusic);
@@ -53,5 +54,5 @@ public class AudioController : MonoBehaviour
 
     public void PlaySound_ButtonClick() => sfxSource.PlayOneShot(buttonClick);
     public void PlaySound_PlayerShoot() => sfxSource.PlayOneShot(playerShoot);
-    public void PlaySound_EnemyDeath() => sfxSource.PlayOneShot(enemyDeath);
+    public void PlaySound_EnemyShoot() => sfxSource.PlayOneShot(enemyShoot);
 }

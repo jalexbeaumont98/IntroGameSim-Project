@@ -155,6 +155,8 @@ public class EnemyWraith : Enemy
 
         // Launch it in the direction it’s facing
         proj.Launch();
+
+        AudioController.Instance.PlaySound_EnemyShoot();
     }
 
     private void OnDrawGizmosSelected()

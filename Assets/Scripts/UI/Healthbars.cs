@@ -24,13 +24,15 @@ public class Healthbars : MonoBehaviour
 
     private void UpdateCrystalHP(int currentHP, int maxHP)
     {
-        crystalSlider.value = currentHP;
         crystalSlider.maxValue = maxHP;
+        crystalSlider.value = currentHP;
+        
     } 
     
     private void UpdatePlayerHP(int currentHP, int maxHP)
     {
-        playerSlider.value = currentHP;
         playerSlider.maxValue = maxHP;
+        playerSlider.value = currentHP;
+        
     }
 }

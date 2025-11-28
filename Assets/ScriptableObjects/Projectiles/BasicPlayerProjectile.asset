@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcaf4a028fb2d3d4c9de540c48515802, type: 3}
   m_Name: BasicPlayerProjectile
   m_EditorClassIdentifier: 
-  speed: 6
+  speed: 12
   damage: 1
   sprite: {fileID: 21300000, guid: 8127d5407db67c54b90308479a51902a, type: 3}
   prefab: {fileID: 8432532759693201208, guid: 913b174380e9a084ca3f3ba48598ac4b, type: 3}
-  hitEffect: {fileID: 0}
+  hitEffect: {fileID: 5354051161797359816, guid: b331e030bb4c4fd41ac5ce4d4565a14e, type: 3}

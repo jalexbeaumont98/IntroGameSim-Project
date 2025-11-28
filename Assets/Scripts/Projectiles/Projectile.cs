@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
@@ -40,7 +41,7 @@ public class Projectile : MonoBehaviour
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        print("collided with trigger: " + collision.gameObject.tag);
+        //print("collided with trigger: " + collision.gameObject.tag);
         
         if (((1 << collision.gameObject.layer) & groundLayer) != 0)
         {
@@ -51,6 +52,8 @@ public class Projectile : MonoBehaviour
     
     public virtual void DestroyProjectile()
     {
+        if (hitEffect)
+        Instantiate(hitEffect, transform.position, quaternion.identity);
         Destroy(gameObject);
     }
 }

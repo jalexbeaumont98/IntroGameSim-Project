@@ -7,6 +7,7 @@ public class PlayerTurret : MonoBehaviour
     [Header("Turret Settings")]
     [SerializeField] Transform firePoint;
     [SerializeField] ProjectileData projData;
+    [SerializeField] private LayerMask groundMask;
 
     [Header("Firing Settings")]
     [SerializeField] protected float fireRate = 2f;  // shots per second — higher = faster
@@ -28,7 +29,7 @@ public class PlayerTurret : MonoBehaviour
     private void Update()
     {
         // If the current target was destroyed, clear and look for another
-        if (currentTarget == null)
+        if (IsTargetBlocked(currentTarget))
         {
             FindNewTarget();
         }
@@ -68,7 +69,9 @@ public class PlayerTurret : MonoBehaviour
 
         // Launch it in the direction it’s facing
         proj.Launch();
+        AudioController.Instance.PlaySound_PlayerShoot();
     }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -81,6 +84,7 @@ public class PlayerTurret : MonoBehaviour
             currentTarget = other.transform;
         }
     }
+
 
     private void OnTriggerExit2D(Collider2D other)
     {
@@ -99,12 +103,37 @@ public class PlayerTurret : MonoBehaviour
         {
             if (hit.CompareTag("Enemy"))
             {
-                currentTarget = hit.transform;
-                return;
+                if (!IsTargetBlocked(hit.transform))
+                {
+                    currentTarget = hit.transform;
+                    return;
+                }
+
             }
         }
 
         currentTarget = null; // none found
+    }
+
+    public bool IsTargetBlocked(Transform target)
+    {
+        if (target == null) return true; // treat null as blocked
+
+        Vector2 origin = firePoint.position;            // wherever the shot originates
+        Vector2 direction = (target.position - firePoint.position).normalized;
+        float distance = Vector2.Distance(firePoint.position, target.position);
+
+        // Raycast toward target, but only for ground layer
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, distance, groundMask);
+
+        #if UNITY_EDITOR
+        // Debug draw the ray
+        Color rayColor = (hit.collider == null) ? Color.green : Color.red;
+        Debug.DrawLine(origin, target.position, rayColor);
+        #endif
+
+        // If hit something in ground layer → target is blocked
+        return hit.collider != null;
     }
 
     private void OnDrawGizmosSelected()
