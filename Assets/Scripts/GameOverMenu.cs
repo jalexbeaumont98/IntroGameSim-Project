@@ -5,8 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class GameOverMenu : MonoBehaviour
 {
+    void Start()
+    {
+        // Play game over music when this scene loads
+        AudioController.Instance?.PlayMusic_GameOver();
+    }
+
     public void OnContinuePressed()
     {
+        AudioController.Instance?.PlaySound_ButtonClick();
+
         if (!string.IsNullOrEmpty(GameSessionManager.LastLevel))
         {
             SceneManager.LoadScene(GameSessionManager.LastLevel);
@@ -20,7 +28,13 @@ public class GameOverMenu : MonoBehaviour
 
     public void OnQuitPressed()
     {
+        AudioController.Instance?.PlaySound_ButtonClick();
+
         Debug.Log("Quitting Game");
         Application.Quit();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 }
